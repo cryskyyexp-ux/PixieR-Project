@@ -2,132 +2,69 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" href="icon.png" type="image/png">
-<meta name="description" content="Ubah foto jadi pixel art secara realtime di browser. Fitur crop/fit/stretch, eye dropper, export PNG/JPG/WebP. 100% gratis & private.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PixieR — Pixel Art Converter</title>
+<title>PixieR - Pixel Art Converter</title>
 <style>
-:root {
-  --bg:        #ffffff;
-  --bg2:       #f4f4f8;
-  --surface:   #ffffff;
-  --border:    #e2e2ec;
-  --text:      #1a1a2e;
-  --text2:     #666688;
-  --a1: #ff6b6b;
-  --a2: #4ecdc4;
-  --a3: #ffe66d;
-  --a4: #a29bfe;
-  --a5: #fd79a8;
-  --a6: #55efc4;
-  --shadow:    0 2px 20px rgba(0,0,0,0.07);
-  --shadow2:   0 6px 32px rgba(0,0,0,0.11);
-  --radius:    16px;
-  --font:      'Segoe UI', system-ui, -apple-system, sans-serif;
-  --transition: .25s cubic-bezier(.4,0,.2,1);
+:root{
+  --bg:#ffffff;--bg2:#f4f4f8;--surface:#ffffff;--border:#e2e2ec;
+  --text:#1a1a2e;--text2:#666688;
+  --a1:#ff6b6b;--a2:#4ecdc4;--a3:#ffe66d;--a4:#a29bfe;--a5:#fd79a8;--a6:#55efc4;
+  --shadow:0 2px 20px rgba(0,0,0,.07);--shadow2:0 6px 32px rgba(0,0,0,.11);
+  --radius:16px;--font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --tr:.25s cubic-bezier(.4,0,.2,1);
 }
-[data-theme="dark"] {
-  --bg:      #0c0c1a;
-  --bg2:     #13132a;
-  --surface: #18182e;
-  --border:  #2a2a46;
-  --text:    #eeeeff;
-  --text2:   #8888aa;
-  --shadow:  0 2px 20px rgba(0,0,0,0.35);
-  --shadow2: 0 6px 32px rgba(0,0,0,0.5);
+[data-theme=dark]{
+  --bg:#0c0c1a;--bg2:#13132a;--surface:#18182e;--border:#2a2a46;
+  --text:#eeeeff;--text2:#8888aa;
+  --shadow:0 2px 20px rgba(0,0,0,.35);--shadow2:0 6px 32px rgba(0,0,0,.5);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  font-family:var(--font);
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  transition:background var(--transition),color var(--transition);
-  overflow-x:hidden;
-}
-#grid-bg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-}
+body{font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100vh;transition:background var(--tr),color var(--tr);overflow-x:hidden}
+#grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 .page{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 20px 80px}
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:22px 0 18px;
-}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-grid{
-  display:grid;grid-template-columns:repeat(5,7px);
-  grid-template-rows:repeat(5,7px);gap:1.5px;
-}
-.logo-grid span{border-radius:1px;transition:opacity .4s}
+.logo-grid{display:grid;grid-template-columns:repeat(5,7px);grid-template-rows:repeat(5,7px);gap:1.5px}
+.logo-grid span{border-radius:1px}
 .logo-name{font-size:1.55rem;font-weight:900;letter-spacing:-.5px}
-.logo-name em{
-  font-style:normal;
-  background:linear-gradient(135deg,var(--a1),var(--a4));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.badge{
-  font-size:.6rem;font-weight:800;letter-spacing:.8px;
-  background:var(--a2);color:#0a3330;
-  padding:2px 7px;border-radius:99px;align-self:flex-start;margin-top:6px;
-}
+.logo-name em{font-style:normal;background:linear-gradient(135deg,var(--a1),var(--a4));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{font-size:.6rem;font-weight:800;letter-spacing:.8px;background:var(--a2);color:#0a3330;
+  padding:2px 7px;border-radius:99px;align-self:flex-start;margin-top:6px}
 .nav-right{display:flex;align-items:center;gap:12px}
-.version-tag{font-size:.72rem;font-weight:700;color:var(--text2);letter-spacing:.5px}
-.toggle{
-  width:54px;height:28px;border-radius:99px;
-  border:1.5px solid var(--border);background:var(--bg2);
-  cursor:pointer;position:relative;display:flex;align-items:center;padding:0 4px;
-  transition:background var(--transition),border-color var(--transition);
-}
-.toggle-knob{
-  width:18px;height:18px;border-radius:50%;
-  background:linear-gradient(135deg,var(--a1),var(--a4));
-  transition:transform var(--transition);flex-shrink:0;
-}
-[data-theme="dark"] .toggle-knob{transform:translateX(26px)}
-.toggle-emoji{position:absolute;font-size:.85rem;top:50%;transform:translateY(-50%)}
-.toggle-emoji.s{left:5px}
-.toggle-emoji.m{right:4px}
-.hero{text-align:center;padding:16px 0 32px}
-.hero h1{
-  font-size:clamp(2rem,5.5vw,3.2rem);
-  font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;
-}
-.grad{
-  background:linear-gradient(135deg,var(--a1),var(--a4),var(--a5));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
+.ver-tag{font-size:.72rem;font-weight:700;color:var(--text2);letter-spacing:.5px}
+.toggle{width:54px;height:28px;border-radius:99px;border:1.5px solid var(--border);
+  background:var(--bg2);cursor:pointer;position:relative;display:flex;align-items:center;
+  padding:0 4px;transition:background var(--tr),border-color var(--tr)}
+.toggle-knob{width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,var(--a1),var(--a4));transition:transform var(--tr);flex-shrink:0}
+[data-theme=dark] .toggle-knob{transform:translateX(26px)}
+.te{position:absolute;font-size:.85rem;top:50%;transform:translateY(-50%)}
+.te.s{left:5px}.te.m{right:4px}
+.hero{text-align:center;padding:16px 0 28px}
+.hero h1{font-size:clamp(2rem,5.5vw,3.2rem);font-weight:900;letter-spacing:-1.5px;
+  line-height:1.1;margin-bottom:14px}
+.grad{background:linear-gradient(135deg,var(--a1),var(--a4),var(--a5));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero p{color:var(--text2);font-size:1rem;max-width:500px;margin:0 auto;line-height:1.65}
 .pill-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:16px}
-.pill{
-  font-size:.75rem;font-weight:700;padding:4px 12px;border-radius:99px;
-  border:1.5px solid var(--border);color:var(--text2);background:var(--bg2);
-  letter-spacing:.3px;
-}
+.pill{font-size:.75rem;font-weight:700;padding:4px 12px;border-radius:99px;
+  border:1.5px solid var(--border);color:var(--text2);background:var(--bg2);letter-spacing:.3px}
 .pill.c1{border-color:var(--a1);color:var(--a1);background:rgba(255,107,107,.08)}
 .pill.c2{border-color:var(--a2);color:var(--a2);background:rgba(78,205,196,.08)}
 .pill.c4{border-color:var(--a4);color:var(--a4);background:rgba(162,155,254,.08)}
-.card{
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:var(--radius);box-shadow:var(--shadow);
-  padding:26px 28px;margin-bottom:18px;
-  transition:background var(--transition),border-color var(--transition),box-shadow var(--transition);
-}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:26px 28px;margin-bottom:18px;
+  transition:background var(--tr),border-color var(--tr),box-shadow var(--tr)}
 .card:hover{box-shadow:var(--shadow2)}
-.card-head{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:18px;
-}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .card-title{font-size:.75rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--text2)}
-.card-badge{
-  font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:99px;
-  background:rgba(162,155,254,.15);color:var(--a4);border:1px solid rgba(162,155,254,.3);
-}
-#drop-zone{
-  border:2px dashed var(--border);border-radius:12px;
-  padding:40px 20px;text-align:center;cursor:pointer;
-  transition:border-color .2s,background .2s;position:relative;
-}
+.card-badge{font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:99px;
+  background:rgba(162,155,254,.15);color:var(--a4);border:1px solid rgba(162,155,254,.3)}
+#drop-zone{border:2px dashed var(--border);border-radius:12px;padding:40px 20px;
+  text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
 #drop-zone:hover,#drop-zone.over{border-color:var(--a4);background:rgba(162,155,254,.07)}
 #drop-zone.has-image{padding:0;border-style:solid;border-color:var(--a2);overflow:hidden}
 #drop-zone input{display:none}
@@ -135,180 +72,205 @@ header{
 .dz-icon{font-size:3rem;display:block;margin-bottom:10px;line-height:1}
 .dz-title{font-size:1rem;font-weight:700;margin-bottom:5px}
 .dz-hint{font-size:.85rem;color:var(--text2);margin-bottom:14px}
-.dz-btn{
-  display:inline-block;padding:9px 24px;border-radius:9px;font-size:.88rem;font-weight:800;
+.dz-btn{display:inline-block;padding:9px 24px;border-radius:9px;font-size:.88rem;font-weight:800;
   background:linear-gradient(135deg,var(--a4),var(--a5));color:#fff;cursor:pointer;
   border:none;pointer-events:all;transition:opacity .2s,transform .15s;
-  box-shadow:0 3px 12px rgba(162,155,254,.35);
-}
+  box-shadow:0 3px 12px rgba(162,155,254,.35)}
 .dz-btn:hover{opacity:.88;transform:translateY(-1px)}
 #orig-preview-wrap{display:none;position:relative}
-#orig-preview-wrap img{
-  width:100%;max-height:320px;object-fit:contain;display:block;
-  background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 0 0/16px 16px;
-}
-[data-theme="dark"] #orig-preview-wrap img{
-  background:repeating-conic-gradient(#222 0% 25%,#2a2a2a 0% 50%) 0 0/16px 16px;
-}
-.orig-overlay{
-  position:absolute;bottom:0;left:0;right:0;
-  background:linear-gradient(transparent,rgba(0,0,0,.6));
-  padding:14px 16px 12px;display:flex;align-items:flex-end;justify-content:space-between;
-}
+#orig-preview-wrap img{width:100%;max-height:280px;object-fit:contain;display:block;
+  background:repeating-conic-gradient(#ddd 0% 25%,#fff 0% 50%) 0 0/16px 16px}
+[data-theme=dark] #orig-preview-wrap img{
+  background:repeating-conic-gradient(#222 0% 25%,#2a2a2a 0% 50%) 0 0/16px 16px}
+.orig-overlay{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.65));
+  padding:14px 16px 12px;display:flex;align-items:flex-end;justify-content:space-between}
 .orig-filename{color:#fff;font-size:.82rem;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.5)}
 .orig-dims{color:rgba(255,255,255,.7);font-size:.75rem}
-.change-btn{
-  font-size:.75rem;font-weight:800;padding:5px 13px;border-radius:7px;
+.change-btn{font-size:.75rem;font-weight:800;padding:5px 13px;border-radius:7px;
   border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);
-  color:#fff;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s;
-}
+  color:#fff;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s}
 .change-btn:hover{background:rgba(255,255,255,.25)}
+.px-btn-wrap{text-align:center;margin-top:20px}
+#px-btn{
+  position:relative;overflow:hidden;
+  padding:15px 52px;font-size:1.05rem;font-weight:900;letter-spacing:.3px;
+  border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,var(--a1),var(--a4));color:#fff;
+  box-shadow:0 4px 18px rgba(162,155,254,.4);
+  transition:opacity .2s,transform .15s,box-shadow .2s;
+}
+#px-btn:hover:not(:disabled){opacity:.9;transform:translateY(-2px);box-shadow:0 8px 28px rgba(162,155,254,.5)}
+#px-btn:disabled{opacity:.38;cursor:not-allowed;transform:none}
+/* shimmer */
+#px-btn::after{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  transition:none;
+}
+#px-btn.shimmer::after{animation:shim .8s ease forwards}
+@keyframes shim{0%{left:-80%}100%{left:130%}}
+
+/* loading bar inside button */
+.btn-prog{
+  position:absolute;bottom:0;left:0;height:3px;width:0%;
+  background:rgba(255,255,255,.6);border-radius:99px;
+  transition:width .06s linear;
+}
+.prog-wrap{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px;display:none}
+.prog-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--a1),var(--a4));
+  border-radius:99px;transition:width .2s}
 .ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:620px){.ctrl-grid{grid-template-columns:1fr}}
-
 .ctrl{display:flex;flex-direction:column;gap:7px}
 .ctrl-label{font-size:.78rem;font-weight:700;color:var(--text2);letter-spacing:.4px}
-.ctrl input[type=number]{
-  width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;
-  background:var(--bg2);color:var(--text);font-size:.95rem;font-family:var(--font);
-  outline:none;transition:border-color .2s;
-}
+.ctrl input[type=number]{width:100%;padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:9px;background:var(--bg2);color:var(--text);font-size:.95rem;
+  font-family:var(--font);outline:none;transition:border-color .2s}
 .ctrl input[type=number]:focus{border-color:var(--a4)}
 .chips{display:flex;flex-wrap:wrap;gap:5px}
-.chip{
-  padding:4px 11px;border-radius:99px;font-size:.75rem;font-weight:800;
+.chip{padding:4px 11px;border-radius:99px;font-size:.75rem;font-weight:800;
   border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);
-  cursor:pointer;transition:all .15s;user-select:none;
-}
+  cursor:pointer;transition:all .15s;user-select:none}
 .chip:hover{border-color:var(--a2);color:var(--text)}
 .chip.on{border-color:var(--a2);background:rgba(78,205,196,.14);color:var(--text)}
 .link-row{display:flex;align-items:center;gap:8px}
 .link-row input[type=number]{flex:1}
-.link-btn{
-  width:32px;height:32px;flex-shrink:0;border-radius:8px;
+.link-btn{width:32px;height:32px;flex-shrink:0;border-radius:8px;
   border:1.5px solid var(--border);background:var(--bg2);
   cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
-  transition:all .15s;color:var(--text2);
-}
+  transition:all .15s;color:var(--text2)}
 .link-btn.linked{border-color:var(--a4);background:rgba(162,155,254,.15);color:var(--a4)}
 .mode-row{display:flex;gap:6px}
-.mode-tab{
-  flex:1;padding:8px 4px;text-align:center;border-radius:9px;font-size:.78rem;font-weight:800;
+.mode-tab{flex:1;padding:8px 4px;text-align:center;border-radius:9px;font-size:.78rem;font-weight:800;
   border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;
-  transition:all .15s;line-height:1.3;
-}
+  transition:all .15s;line-height:1.3}
 .mode-tab:hover{border-color:var(--a1);color:var(--text)}
 .mode-tab.on{border-color:var(--a1);background:rgba(255,107,107,.12);color:var(--text)}
 .zoom-row{display:flex;align-items:center;gap:10px}
 .zoom-row input[type=range]{flex:1;accent-color:var(--a4);cursor:pointer}
 .zoom-num{font-size:.82rem;font-weight:800;color:var(--a4);min-width:32px;text-align:right}
-.rt-label{
-  display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--a2);
-}
+.rt-label{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--a2)}
 .rt-dot{width:7px;height:7px;border-radius:50%;background:var(--a2);animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
-#workspace{display:none}
 
-.ws-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;flex-wrap:wrap;gap:10px;
+/* locked overlay on controls */
+.ctrl-lock-msg{
+  display:none;
+  position:absolute;inset:0;z-index:10;border-radius:var(--radius);
+  background:rgba(var(--bg-rgb,255,255,255),.72);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;flex-direction:column;gap:8px;
+  font-size:.88rem;font-weight:700;color:var(--text2);text-align:center;
 }
+[data-theme=dark] .ctrl-lock-msg{background:rgba(12,12,26,.72)}
+.ctrl-lock-msg.show{display:flex}
+.ctrl-card{position:relative}
+#workspace{display:none}
+.ws-header{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .ws-title{font-size:.75rem;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--text2)}
+.rt-badge{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;color:var(--a2)}
+.rt-dot2{width:7px;height:7px;border-radius:50%;background:var(--a2);animation:pulse 1.5s infinite}
+.view-tabs{display:flex;gap:6px;margin-bottom:14px}
+.view-tab{padding:7px 16px;border-radius:9px;font-size:.78rem;font-weight:800;
+  border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);
+  cursor:pointer;transition:all .15s}
+.view-tab.on{border-color:var(--a4);background:rgba(162,155,254,.15);color:var(--text)}
+
+/* side-by-side */
 .split-view{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:620px){.split-view{grid-template-columns:1fr}}
-
 .pane{display:flex;flex-direction:column;gap:8px}
-.pane-label{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:.75rem;font-weight:800;color:var(--text2);letter-spacing:.8px;text-transform:uppercase;
-}
-.pane-dims{font-size:.72rem;font-weight:700;color:var(--text2);font-style:normal;text-transform:none;letter-spacing:0}
-.frame{
-  border-radius:10px;border:1.5px solid var(--border);overflow:hidden;
+.pane-label{display:flex;align-items:center;justify-content:space-between;
+  font-size:.75rem;font-weight:800;color:var(--text2);letter-spacing:.8px;text-transform:uppercase}
+.pane-dims{font-size:.72rem;font-weight:700;color:var(--text2);font-style:normal;
+  text-transform:none;letter-spacing:0}
+.frame{border-radius:10px;border:1.5px solid var(--border);overflow:hidden;
   background:repeating-conic-gradient(#ccc 0% 25%,#fff 0% 50%) 0 0/16px 16px;
-  display:flex;align-items:center;justify-content:center;min-height:180px;
-  position:relative;
-}
-[data-theme="dark"] .frame{
-  background:repeating-conic-gradient(#222 0% 25%,#2a2a2a 0% 50%) 0 0/16px 16px;
-}
-.frame img,.frame canvas{
-  max-width:100%;max-height:360px;display:block;
-  image-rendering:pixelated;image-rendering:-moz-crisp-edges;
-}
+  display:flex;align-items:center;justify-content:center;min-height:180px;position:relative}
+[data-theme=dark] .frame{background:repeating-conic-gradient(#222 0% 25%,#2a2a2a 0% 50%) 0 0/16px 16px}
+.frame img,.frame canvas{max-width:100%;max-height:360px;display:block;
+  image-rendering:pixelated;image-rendering:-moz-crisp-edges}
 .frame canvas{cursor:crosshair}
-#eyedrop-tip{
-  position:absolute;top:10px;right:10px;
-  background:rgba(0,0,0,.75);color:#fff;
+#eyedrop-tip{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.78);color:#fff;
   padding:5px 10px;border-radius:8px;font-size:.75rem;font-weight:700;
-  pointer-events:none;display:none;backdrop-filter:blur(4px);
-}
-.spin-overlay{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(var(--bg-rgb,255,255,255),.7);backdrop-filter:blur(2px);
-  border-radius:9px;z-index:5;
-}
-.spinner{
-  width:28px;height:28px;border:3px solid var(--border);
-  border-top-color:var(--a4);border-radius:50%;animation:spin .7s linear infinite;
-}
+  pointer-events:none;display:none;backdrop-filter:blur(4px);z-index:5}
+.spin-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.7);backdrop-filter:blur(2px);border-radius:9px;z-index:5}
+[data-theme=dark] .spin-overlay{background:rgba(12,12,26,.7)}
+.spinner{width:28px;height:28px;border:3px solid var(--border);
+  border-top-color:var(--a4);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.dl-bar{
-  display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:6px;
+#compare-wrap{display:none;position:relative;border-radius:10px;overflow:hidden;
+  border:1.5px solid var(--border);min-height:180px;user-select:none;touch-action:none;cursor:ew-resize}
+#compare-orig,#compare-pixel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#compare-orig img,#compare-pixel canvas{
+  width:100%;height:100%;object-fit:contain;display:block;
+  image-rendering:pixelated;image-rendering:-moz-crisp-edges;pointer-events:none}
+#compare-pixel{clip-path:inset(0 0 0 50%);transition:none}
+/* divider line */
+#compare-divider{
+  position:absolute;top:0;bottom:0;width:2px;background:#fff;
+  box-shadow:0 0 8px rgba(0,0,0,.5);z-index:10;pointer-events:none;left:50%;transform:translateX(-50%);
 }
-.dl-btn{
-  display:flex;align-items:center;gap:5px;
-  padding:8px 18px;border-radius:9px;font-size:.84rem;font-weight:800;
-  border:1.5px solid var(--border);background:var(--bg2);color:var(--text);
-  cursor:pointer;transition:all .15s;
+/* handle */
+#compare-handle{
+  position:absolute;top:50%;z-index:11;
+  width:38px;height:38px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;pointer-events:none;
+  transform:translate(-50%,-50%);left:50%;
+  transition:box-shadow .15s;
 }
+#compare-wrap:active #compare-handle{box-shadow:0 4px 20px rgba(0,0,0,.55)}
+.cmp-label-orig,.cmp-label-px{
+  position:absolute;bottom:10px;font-size:.7rem;font-weight:800;
+  padding:3px 9px;border-radius:6px;backdrop-filter:blur(6px);z-index:12;pointer-events:none;
+}
+.cmp-label-orig{left:10px;background:rgba(0,0,0,.5);color:#fff}
+.cmp-label-px{right:10px;background:rgba(162,155,254,.8);color:#fff}
+.dl-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.dl-btn{display:flex;align-items:center;gap:5px;padding:8px 18px;border-radius:9px;
+  font-size:.84rem;font-weight:800;border:1.5px solid var(--border);background:var(--bg2);
+  color:var(--text);cursor:pointer;transition:all .15s}
 .dl-btn:hover{border-color:var(--a2);background:rgba(78,205,196,.12);transform:translateY(-1px)}
-.dl-btn.primary{
-  background:linear-gradient(135deg,var(--a1),var(--a4));border:none;color:#fff;
-  box-shadow:0 3px 12px rgba(162,155,254,.3);
-}
+.dl-btn.primary{background:linear-gradient(135deg,var(--a1),var(--a4));border:none;color:#fff;
+  box-shadow:0 3px 12px rgba(162,155,254,.3)}
 .dl-btn.primary:hover{opacity:.9;box-shadow:0 5px 18px rgba(162,155,254,.45)}
-.prog-wrap{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px;display:none}
-.prog-bar{height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a4));border-radius:99px;transition:width .2s}
-#toast{
-  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(70px);
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(70px);
   background:var(--text);color:var(--bg);padding:10px 22px;border-radius:11px;
   font-size:.88rem;font-weight:700;z-index:9999;opacity:0;
-  transition:transform .3s,opacity .3s;white-space:nowrap;pointer-events:none;
-}
+  transition:transform .3s,opacity .3s;white-space:nowrap;pointer-events:none}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 footer{text-align:center;padding:28px 0 0;color:var(--text2);font-size:.8rem;line-height:1.7}
 footer strong{color:var(--text)}
 </style>
 </head>
 <body>
-
 <canvas id="grid-bg"></canvas>
-
 <div class="page">
 <header>
   <div class="logo">
     <div class="logo-grid" id="lgrid"></div>
-    <div>
-      <div class="logo-name">Pixie<em>R</em></div>
-    </div>
+    <div><div class="logo-name">Pixie<em>R</em></div></div>
     <span class="badge">Beta</span>
   </div>
   <div class="nav-right">
-    <span class="version-tag">Realtime</span>
+    <span class="ver-tag">COMPARE SLIDER</span>
     <button class="toggle" id="themeBtn" aria-label="Toggle theme">
-      <span class="toggle-emoji s">☀️</span>
+      <span class="te s">☀️</span>
       <div class="toggle-knob"></div>
-      <span class="toggle-emoji m">🌙</span>
+      <span class="te m">🌙</span>
     </button>
   </div>
 </header>
 <div class="hero">
   <h1>Your image,<br><span class="grad">one pixel at a time.</span></h1>
-  <p>Drop a photo, set your grid, and watch it become pixel art — live, in your browser, with zero uploads.</p>
+  <p>Drop a photo, hit Pixelate, then tweak settings live with a drag-to-compare slider.</p>
   <div class="pill-row">
     <span class="pill c1">100% client-side</span>
-    <span class="pill c2">Realtime preview</span>
+    <span class="pill c2">Compare slider</span>
     <span class="pill c4">No API</span>
   </div>
 </div>
@@ -317,35 +279,38 @@ footer strong{color:var(--text)}
     <span class="card-title">📁 Image</span>
     <span class="card-badge" id="file-badge">No file</span>
   </div>
-
   <div id="drop-zone">
     <input type="file" id="file-input" accept="image/*"/>
     <div class="dz-empty" id="dz-empty">
       <span class="dz-icon">🖼️</span>
       <div class="dz-title">Drop your image here</div>
-      <div class="dz-hint">PNG · JPG · WEBP · GIF · BMP — any size</div>
+      <div class="dz-hint">PNG · JPG · WEBP · GIF · BMP - any size</div>
       <label class="dz-btn" for="file-input">Choose File</label>
     </div>
     <div id="orig-preview-wrap">
       <img id="orig-thumb" alt="original"/>
       <div class="orig-overlay">
         <div>
-          <div class="orig-filename" id="fname">—</div>
-          <div class="orig-dims" id="fdims">—</div>
+          <div class="orig-filename" id="fname">-</div>
+          <div class="orig-dims" id="fdims">-</div>
         </div>
         <label class="change-btn" for="file-input">Change ↺</label>
       </div>
     </div>
   </div>
-
   <div class="prog-wrap" id="load-prog"><div class="prog-bar" id="load-bar"></div></div>
+  <div class="px-btn-wrap">
+    <button id="px-btn" disabled>
+      ✨ Pixelate!
+      <div class="btn-prog" id="btn-prog"></div>
+    </button>
+  </div>
 </div>
-<div class="card">
+<div class="card ctrl-card" id="ctrl-card">
   <div class="card-head">
     <span class="card-title">⚙️ Pixel Settings</span>
-    <span class="rt-label"><span class="rt-dot"></span> Realtime</span>
+    <span class="rt-label" id="rt-lbl" style="display:none"><span class="rt-dot"></span> Realtime</span>
   </div>
-
   <div class="ctrl-grid">
     <div class="ctrl">
       <span class="ctrl-label">Width (columns)</span>
@@ -387,33 +352,41 @@ footer strong{color:var(--text)}
         <span class="zoom-num" id="zoom-lbl">6×</span>
       </div>
     </div>
-
+  </div>
+  <div class="ctrl-lock-msg show" id="ctrl-lock">
+    <span style="font-size:1.6rem">🔒</span>
+    Load an image and hit <strong>Pixelate!</strong> to unlock realtime controls
   </div>
 </div>
 <div class="card" id="workspace">
   <div class="ws-header">
-    <span class="ws-title">🎨 Live Preview</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="ws-title">🎨 Result</span>
+      <span class="rt-badge"><span class="rt-dot2"></span> Live</span>
+    </div>
     <div class="dl-bar">
       <button class="dl-btn primary" id="dl-png">⬇ PNG</button>
       <button class="dl-btn" id="dl-jpg">⬇ JPG</button>
       <button class="dl-btn" id="dl-webp">⬇ WebP</button>
     </div>
   </div>
-
-  <div class="split-view">
+  <div class="view-tabs">
+    <div class="view-tab on" id="tab-split" data-view="split">⬛ Side by Side</div>
+    <div class="view-tab" id="tab-compare" data-view="compare">↔ Compare Slider</div>
+    <div class="view-tab" id="tab-pixel" data-view="pixel">🔲 Pixel Only</div>
+  </div>
+  <div class="split-view" id="view-split">
     <div class="pane">
       <div class="pane-label">
         <span>Original</span>
-        <em class="pane-dims" id="orig-dims-lbl">—</em>
+        <em class="pane-dims" id="orig-dims-lbl">-</em>
       </div>
-      <div class="frame">
-        <img id="ws-orig" alt="original"/>
-      </div>
+      <div class="frame"><img id="ws-orig" alt="original"/></div>
     </div>
     <div class="pane">
       <div class="pane-label">
         <span>Pixelated</span>
-        <em class="pane-dims" id="pixel-dims-lbl">—</em>
+        <em class="pane-dims" id="pixel-dims-lbl">-</em>
       </div>
       <div class="frame" id="pixel-frame">
         <canvas id="pixel-canvas"></canvas>
@@ -422,10 +395,26 @@ footer strong{color:var(--text)}
       </div>
     </div>
   </div>
+  <div id="compare-wrap">
+    <div id="compare-orig"><img id="cmp-orig-img" alt="original"/></div>
+    <div id="compare-pixel">
+      <canvas id="cmp-canvas"></canvas>
+    </div>
+    <div id="compare-divider"></div>
+    <div id="compare-handle">↔</div>
+    <span class="cmp-label-orig">Original</span>
+    <span class="cmp-label-px">Pixelated</span>
+  </div>
+  <div id="view-pixel" style="display:none">
+    <div class="frame" style="min-height:240px">
+      <canvas id="solo-canvas" style="max-width:100%;max-height:480px;image-rendering:pixelated"></canvas>
+    </div>
+  </div>
 </div>
 
 <footer>
-  <strong>PixieR Beta</strong> — pixel art converter · everything runs in your browser<br>
+  <strong>PixieR Beta</strong> - pixel art converter · everything runs in your browser<br>
+  <span style="opacity:.6">images never leave your device · open source spirit · canvas API</span>
 </footer>
 </div>
 <div id="toast"></div>

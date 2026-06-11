@@ -37,7 +37,7 @@ No install. No account. No server. Your images never leave your device.
 
 ---
 
-## 🚀 Quick Start
+## 📖 Quick Start
 
 ```bash
 # Option 1 — just open it
