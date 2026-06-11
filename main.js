@@ -35,7 +35,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
   drawGC();
 });
 let srcImg=null, scaleMode='fit', linked=true, debTimer=null;
-let pixelated=false; // has the user pressed Pixelate at least once?
+let pixelated=false;
 let viewMode='split';
 const dz=document.getElementById('drop-zone');
 const fi=document.getElementById('file-input');
@@ -56,7 +56,6 @@ function setFileProgress(pct){
 }
 
 function loadFile(file){
-  // reset state
   pixelated=false;
   document.getElementById('ctrl-lock').classList.add('show');
   document.getElementById('rt-lbl').style.display='none';
@@ -94,8 +93,6 @@ pxBtn.addEventListener('click',()=>{
   pxBtn.disabled=true;
   pxBtn.textContent='⏳ Processing…';
   btnProg.style.display='block';
-
-  // Animate progress bar over 5s
   let pct=0;
   const steps=[
     {at:0,   val:8},
@@ -111,23 +108,16 @@ pxBtn.addEventListener('click',()=>{
   setTimeout(()=>{
     btnProg.style.width='100%';
     setTimeout(()=>{
-      // Done - actually pixelate
       doPixelate();
-
-      // Unlock realtime controls
       pixelated=true;
       document.getElementById('ctrl-lock').classList.remove('show');
       document.getElementById('rt-lbl').style.display='flex';
-
-      // Update button
       pxBtn.classList.add('shimmer');
       pxBtn.textContent='✨ Pixelate!';
-      pxBtn.appendChild(btnProg); // re-attach (textContent nuked it)
+      pxBtn.appendChild(btnProg);
       btnProg.style.width='0%';
       pxBtn.disabled=false;
       setTimeout(()=>pxBtn.classList.remove('shimmer'),900);
-
-      // Show workspace
       document.getElementById('workspace').style.display='block';
       document.getElementById('ws-orig').src=document.getElementById('orig-thumb').src;
       document.getElementById('orig-dims-lbl').textContent=`${srcImg.width}×${srcImg.height}`;
@@ -183,7 +173,7 @@ document.querySelectorAll('.mode-tab').forEach(t=>t.addEventListener('click',()=
 }));
 
 function schedulePx(){
-  if(!pixelated)return; // only realtime after first pixelate
+  if(!pixelated)return;
   clearTimeout(debTimer);debTimer=setTimeout(doPixelate,120);
 }
 document.querySelectorAll('.view-tab').forEach(tab=>{
@@ -194,7 +184,6 @@ document.querySelectorAll('.view-tab').forEach(tab=>{
     showView(viewMode);
   });
 });
-
 function showView(mode){
   document.getElementById('view-split').style.display  = mode==='split'   ? 'grid' : 'none';
   document.getElementById('compare-wrap').style.display= mode==='compare' ? 'block': 'none';
@@ -223,8 +212,6 @@ function doPixelate(){
       else{sH=Math.round(srcImg.width/dr);sy=(srcImg.height-sH)/2}
       sc.drawImage(srcImg,sx,sy,sW,sH,0,0,sw,sh);
     }else{sc.drawImage(srcImg,0,0,sw,sh)}
-
-    // main canvas
     const out=document.getElementById('pixel-canvas');
     out.width=sw;out.height=sh;
     out.getContext('2d').drawImage(small,0,0);
@@ -246,15 +233,12 @@ function applyZoom(){
 function syncCmpCanvas(){
   const src=document.getElementById('pixel-canvas');
   if(!src.width)return;
-  // set compare-wrap height to match a nice aspect
   const wrap=document.getElementById('compare-wrap');
   const ww=wrap.clientWidth||600;
   const aspect=srcImg?srcImg.height/srcImg.width:1;
   const h=Math.min(400,Math.round(ww*aspect));
   wrap.style.height=h+'px';
-  // original image in compare
   document.getElementById('cmp-orig-img').src=document.getElementById('orig-thumb').src;
-  // copy pixel canvas to cmp-canvas
   const cmp=document.getElementById('cmp-canvas');
   cmp.width=src.width;cmp.height=src.height;
   cmp.style.width='100%';cmp.style.height='100%';
@@ -338,3 +322,138 @@ function toast(msg){
   el.textContent=msg;el.classList.add('show');
   clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2800);
 }
+(function() {
+  const POPUP_KEY = 'pixier_star_popup_closed';
+  const NEVER_KEY = 'pixier_star_never_again';
+  const SESSION_SHOWN = 'pixier_star_shown_session';
+  function createPopupHTML() {
+    if (document.getElementById('starPopup')) return;
+    
+    const popupHTML = `
+      <div id="starPopup" class="popup-overlay">
+        <div class="popup-card">
+          <div class="popup-icon">⭐✨</div>
+          <h2>Love PixieR?</h2>
+          <p>This tool is 100% free & open source.<br>Support the project by giving a star on GitHub!</p>
+          <a href="https://github.com/cryskyyexp-ux/PixieR-Project" target="_blank" rel="noopener noreferrer" class="repo-link" id="popupRepoLink">github.com/cryskyyexp-ux/PixieR-Project</a>
+          <div class="popup-buttons">
+            <button class="star-btn" id="starNowBtn">🌟 Star on GitHub</button>
+            <button class="later-btn" id="laterBtn">⏱️ Remind later</button>
+            <button class="never-btn" id="neverBtn">🔕 Don't show again</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', popupHTML);
+  }
+
+  function closePopup() {
+    const overlay = document.getElementById('starPopup');
+    if (overlay) overlay.classList.remove('active');
+  }
+
+  function showPopup() {
+    const overlay = document.getElementById('starPopup');
+    if (overlay) overlay.classList.add('active');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    if (!toast) {
+      const newToast = document.createElement('div');
+      newToast.id = 'toast';
+      newToast.style.cssText = `
+        position: fixed;
+        bottom: 26px;
+        left: 50%;
+        transform: translateX(-50%) translateY(70px);
+        background: var(--text, #1a1a2e);
+        color: var(--bg, #ffffff);
+        padding: 10px 22px;
+        border-radius: 11px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        z-index: 9999;
+        opacity: 0;
+        transition: transform 0.3s, opacity 0.3s;
+        white-space: nowrap;
+        pointer-events: none;
+      `;
+      document.body.appendChild(newToast);
+      newToast.innerText = msg;
+      newToast.classList.add('show');
+      setTimeout(() => newToast.classList.remove('show'), 2600);
+      return;
+    }
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  function shouldShowPopup() {
+    const never = localStorage.getItem(NEVER_KEY);
+    if (never === 'true') return false;
+    const sessionFlag = sessionStorage.getItem(SESSION_SHOWN);
+    if (sessionFlag === 'true') return false;
+    const closedFlag = localStorage.getItem(POPUP_KEY);
+    if (closedFlag === 'true') return false;
+    return true;
+  }
+
+  function markShown() {
+    sessionStorage.setItem(SESSION_SHOWN, 'true');
+  }
+
+  function handleStar(e) {
+    e.preventDefault();
+    window.open('https://github.com/cryskyyexp-ux/PixieR-Project', '_blank');
+    localStorage.setItem(POPUP_KEY, 'true');
+    localStorage.setItem(NEVER_KEY, 'false');
+    closePopup();
+    showToast('Thanks a lot! ⭐ You made my day!');
+  }
+
+  function handleLater() {
+    localStorage.removeItem(POPUP_KEY);
+    sessionStorage.removeItem(SESSION_SHOWN);
+    closePopup();
+    showToast('Reminder set — you\'ll see the popup next visit.');
+  }
+
+  function handleNever() {
+    localStorage.setItem(NEVER_KEY, 'true');
+    localStorage.setItem(POPUP_KEY, 'true');
+    sessionStorage.setItem(SESSION_SHOWN, 'true');
+    closePopup();
+    showToast('Okay, star popup won\'t bother you again 💙');
+  }
+
+  function initPopup() {
+    createPopupHTML();
+    
+    const starBtn = document.getElementById('starNowBtn');
+    const laterBtn = document.getElementById('laterBtn');
+    const neverBtn = document.getElementById('neverBtn');
+    const overlay = document.getElementById('starPopup');
+    
+    if (starBtn) starBtn.addEventListener('click', handleStar);
+    if (laterBtn) laterBtn.addEventListener('click', handleLater);
+    if (neverBtn) neverBtn.addEventListener('click', handleNever);
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          handleLater();
+        }
+      });
+    }
+  }
+window.addEventListener('load', () => {
+    initPopup();
+    setTimeout(() => {
+      if (shouldShowPopup()) {
+        showPopup();
+        markShown();
+      }
+    }, 1200);
+  });
+})();

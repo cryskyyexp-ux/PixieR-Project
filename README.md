@@ -1,6 +1,6 @@
 # PixieR 🎨
 
-> **Turn any image into pixel art — live, in your browser. No uploads. No API. No BS.**
+> **Turn any image into pixel art - live, in your browser. No uploads. No API. No BS.**
 
 ![PixieR Banner](https://img.shields.io/badge/PixieR-Beta-a29bfe?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3QgeD0iMiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iI2ZmNmI2YiIvPjxyZWN0IHg9IjE0IiB5PSIyIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNGVjZGM0Ii8+PHJlY3QgeD0iMiIgeT0iMTQiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNhMjliZmUiLz48cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNmZmU2NmQiLz48L3N2Zz4=)
 ![Version](https://img.shields.io/badge/version-2.0.0-4ecdc4?style=flat-square)
@@ -12,7 +12,9 @@
 
 ## ✨ What is PixieR?
 
-PixieR is a **zero-dependency, client-side pixel art converter** built as a single HTML file. Open it in any modern browser and start converting images to pixel art instantly — with a realtime live preview that updates as you tweak settings.
+PixieR is a **zero-dependency, client-side pixel art converter** built as a single HTML file. Open it in any modern browser and start converting images to pixel art instantly - with a realtime live preview that updates as you tweak settings.
+
+And this project was inspired by Pixilart.com :)
 
 No install. No account. No server. Your images never leave your device.
 
@@ -22,9 +24,9 @@ No install. No account. No server. Your images never leave your device.
 
 | Feature | Details |
 |---|---|
-| 📁 Upload | Drag & drop or click — PNG, JPG, WEBP, GIF, BMP |
+| 📁 Upload | Drag & drop or click - PNG, JPG, WEBP, GIF, BMP |
 | 🔴 Realtime Preview | Canvas updates live as you change any setting (120ms debounce) |
-| 📐 Custom Grid Size | Freeform input for width & height — from 4×4 to 1024×1024 |
+| 📐 Custom Grid Size | Freeform input for width & height - from 4×4 to 1024×1024 |
 | 🔗 Linked Dimensions | Toggle W=H lock for perfect square pixel grids |
 | ⚡ Preset Chips | One-click presets: 16, 32, 64, 128, 256 |
 | 🎭 Scale Modes | **Fit** (preserve ratio), **Stretch** (fill grid), **Crop** (center) |
@@ -33,24 +35,24 @@ No install. No account. No server. Your images never leave your device.
 | 🌙 Dark / Light Mode | Full dark mode with animated grid background in both |
 | ✨ Grid Background | Interactive grid: cells glow softly around your cursor |
 | ⬇️ Export | Download result as PNG, JPG, or WebP |
-| 🔒 100% Private | Everything runs in your browser — zero server communication |
+| 🔒 100% Private | Everything runs in your browser - zero server communication |
 
 ---
 
 ## 📖 Quick Start
 
 ```bash
-# Option 1 — just open it
+# Option 1 - just open it
 open pixier.html   # macOS
 start pixier.html  # Windows
 xdg-open pixier.html  # Linux
 
-# Option 2 — serve locally (optional, not required)
+# Option 2 - serve locally (optional, not required)
 npx serve .
 python3 -m http.server 8080
 ```
 
-That's it. The entire app is `pixier.html` — one file, zero setup.
+That's it !.
 
 ---
 
@@ -64,7 +66,7 @@ A preview appears immediately inside the upload card with filename and dimension
 - Type any **width** and **height** (4–1024)
 - Or tap a **preset chip**: 16 / 32 / 64 / 128 / 256
 - Enable the **🔗 link button** to keep W = H
-- Preview regenerates automatically — no button to press
+- Preview regenerates automatically - no button to press
 
 ### 3. Choose Scale Mode
 | Mode | Behavior |
@@ -75,7 +77,7 @@ A preview appears immediately inside the upload card with filename and dimension
 
 ### 4. Adjust Zoom
 The zoom slider scales the canvas display only (1×–20×).  
-The actual pixel resolution stays the same — zoom doesn't affect your download.
+The actual pixel resolution stays the same - zoom doesn't affect your download.
 
 ### 5. Eyedropper
 Hover over any pixel in the output canvas to see its hex color.  
@@ -124,12 +126,12 @@ Grid cell size: 34×34 px
 | Layer | Tech |
 |---|---|
 | Language | Vanilla JavaScript (ES2020) |
-| Rendering | HTML5 Canvas API |
+| Rendering | HTML5 Canvas |
 | Styling | CSS custom properties, no framework |
 | Dependencies | **Zero** |
 | Build step | **None** |
 | Server | **None** |
-| File size | ~18 KB (single HTML) |
+| File size | ~ ??? KB (Zip/7z, Im lazy to check fr) |
 
 ---
 
@@ -148,12 +150,12 @@ Grid cell size: 34×34 px
 
 ## 📜 License
 
-MIT — do whatever you want, credit is nice but not required.
+MIT - do whatever you want, credit is nice but not required.
 
 ---
 
 ## 👾 Credits
 
-Built with the Canvas API, a dash of obsession over pixel grids, and zero external dependencies.
+Built with the Canvas, a dash of obsession over pixel grids, and zero external dependencies.
 
-> *"Every image is just a very, very low resolution version of itself."* — PixieR, probably
+> *"Every image is just a very, very low resolution version of itself."* - PixieR, probably
