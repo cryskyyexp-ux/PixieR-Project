@@ -12,28 +12,28 @@
 <canvas id="grid-bg"></canvas>
 <div class="page">
 <header>
-  <div class="logo">
-    <div class="logo-grid" id="lgrid"></div>
-    <div><div class="logo-name">Pixie<em>R</em></div></div>
-    <span class="badge">Pixel</span>
-  </div>
-  <div class="nav-right">
+<div class="logo"><!-- Div Logo Open-->
+<div class="logo-grid" id="lgrid"></div>
+<div><div class="logo-name">Pixie<em>R</em></div></div>
+<span class="badge">Pixel</span>
+</div><!-- Div Close -->
+<div class="nav-right">
   <span class="ver-tag">Toggle</span>
   <button class="toggle" id="themeBtn" aria-label="Toggle theme" aria-pressed="false">
-    <span class="te s" aria-hidden="true">☀️</span>
-    <div class="toggle-knob"></div>
-    <span class="te m" aria-hidden="true">🌙</span>
+  <span class="te s" aria-hidden="true">☀️</span>
+<div class="toggle-knob"></div>
+  <span class="te m" aria-hidden="true">🌙</span>
   </button>
 </div>
 </header>
 <div class="hero">
   <h1>Your image,<br><span class="grad">one pixel at a time.</span></h1>
   <p>Drop a photo, hit Pixelate, then tweak settings live with a drag-to-compare slider.</p>
-  <div class="pill-row">
+<div class="pill-row">
     <span class="pill c1">100% client-side</span>
-    <span class="pill c2">Compare slider</span>
+  <span class="pill c2">Compare slider</span>
     <span class="pill c4">No API</span>
-  </div>
+</div>
 </div>
 <div class="card">
   <div class="card-head">
@@ -43,19 +43,17 @@
   <div id="drop-zone">
     <input type="file" id="file-input" accept="image/*"/>
     <div class="dz-empty" id="dz-empty">
-      <span class="dz-icon">🖼️</span>
-      <div class="dz-title">Drop your image here</div>
-      <div class="dz-hint">PNG · JPG · WEBP · GIF · BMP - any size</div>
+      <span class="dz-icon">🖼️</span>    <div class="dz-title">Drop your image here</div>
+    <div class="dz-hint">PNG · JPG · WEBP · GIF · BMP - any size</div>
       <label class="dz-btn" for="file-input">Choose File</label>
     </div>
     <div id="orig-preview-wrap">
       <img id="orig-thumb" alt="original"/>
-      <div class="orig-overlay">
-        <div>
-          <div class="orig-filename" id="fname">-</div>
-          <div class="orig-dims" id="fdims">-</div>
-        </div>
-        <label class="change-btn" for="file-input">Change ↺</label>
+ <div class="orig-overlay">
+    <div>
+    <div class="orig-filename" id="fname">-</div>
+<div class="orig-dims" id="fdims">-</div>        </div>
+<label class="change-btn" for="file-input">Change ↺</label>
       </div>
     </div>
   </div>
@@ -132,9 +130,9 @@
     </div>
   </div>
   <div class="view-tabs">
-    <div class="view-tab on" id="tab-split" data-view="split">⬛ Side by Side</div>
+    <div class="view-tab on" id="tab-split" data-view="split">= Side by Side</div>
     <div class="view-tab" id="tab-compare" data-view="compare">↔ Compare Slider</div>
-    <div class="view-tab" id="tab-pixel" data-view="pixel">🔲 Pixel Only</div>
+    <div class="view-tab" id="tab-pixel" data-view="pixel">^ Pixel Only</div>
   </div>
   <div class="split-view" id="view-split">
     <div class="pane">
@@ -187,7 +185,7 @@
 </div>
 
 <footer>
-  <strong>PixieR</strong> - pixel art converter · everything runs in your browser<br>
+<strong>PixieR</strong> - pixel art converter · everything runs in your browser<br>
 </footer>
 </div>
 <div id="toast"></div>
