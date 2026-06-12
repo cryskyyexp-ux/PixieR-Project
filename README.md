@@ -618,4 +618,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-See the [LICENSE](LICENSE) file for the full text.
+See the [LICENSE](LICENSE.md) file for the full text.
