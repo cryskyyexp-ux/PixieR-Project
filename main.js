@@ -93,7 +93,6 @@ pxBtn.addEventListener('click',()=>{
   pxBtn.disabled=true;
   pxBtn.textContent='⏳ Processing…';
   btnProg.style.display='block';
-  let pct=0;
   const steps=[
     {at:0,   val:8},
     {at:300, val:22},
@@ -230,20 +229,30 @@ function applyZoom(){
   c.style.width=(c.width*z)+'px';
   c.style.height=(c.height*z)+'px';
 }
+
 function syncCmpCanvas(){
   const src=document.getElementById('pixel-canvas');
   if(!src.width)return;
   const wrap=document.getElementById('compare-wrap');
   const ww=wrap.clientWidth||600;
-  const aspect=srcImg?srcImg.height/srcImg.width:1;
-  const h=Math.min(400,Math.round(ww*aspect));
-  wrap.style.height=h+'px';
-  document.getElementById('cmp-orig-img').src=document.getElementById('orig-thumb').src;
+  const aspect=src.width/src.height;
+  let dispW=ww,dispH=Math.round(ww/aspect);
+  const maxH=400;
+  if(dispH>maxH){dispH=maxH;dispW=Math.round(maxH*aspect)}
+  wrap.style.height=dispH+'px';
+
+  const origImg=document.getElementById('cmp-orig-img');
+  origImg.src=document.getElementById('orig-thumb').src;
+  origImg.style.width=dispW+'px';
+  origImg.style.height=dispH+'px';
+  origImg.style.marginLeft=((ww-dispW)/2)+'px';
+
   const cmp=document.getElementById('cmp-canvas');
   cmp.width=src.width;cmp.height=src.height;
-  cmp.style.width='100%';cmp.style.height='100%';
+  cmp.style.width=dispW+'px';
+  cmp.style.height=dispH+'px';
+  cmp.style.marginLeft=((ww-dispW)/2)+'px';
   cmp.style.imageRendering='pixelated';
-  cmp.style.objectFit='contain';
   cmp.getContext('2d').drawImage(src,0,0);
 }
 
@@ -253,8 +262,15 @@ function syncSoloCanvas(){
   const solo=document.getElementById('solo-canvas');
   solo.width=src.width;solo.height=src.height;
   const z=parseInt(zoomSlider.value);
-  solo.style.width=(src.width*z)+'px';
-  solo.style.height=(src.height*z)+'px';
+  let dispW=src.width*z,dispH=src.height*z;
+  const frame=solo.parentElement;
+  const maxW=frame.clientWidth||dispW;
+  const maxH=480;
+  const scale=Math.min(1,maxW/dispW,maxH/dispH);
+  dispW=Math.round(dispW*scale);
+  dispH=Math.round(dispH*scale);
+  solo.style.width=dispW+'px';
+  solo.style.height=dispH+'px';
   solo.getContext('2d').drawImage(src,0,0);
 }
 let cmpDragging=false;
@@ -273,6 +289,7 @@ addEventListener('mousemove',e=>{if(cmpDragging)moveCmp(e)});
 addEventListener('touchmove',e=>{if(cmpDragging)moveCmp(e.touches[0])},{passive:true});
 addEventListener('mouseup',()=>cmpDragging=false);
 addEventListener('touchend',()=>cmpDragging=false);
+addEventListener('resize',()=>{if(viewMode==='compare')syncCmpCanvas();if(viewMode==='pixel')syncSoloCanvas()});
 
 function moveCmp(e){
   const r=cmpWrap.getBoundingClientRect();
@@ -283,9 +300,10 @@ const pixelCanvas=document.getElementById('pixel-canvas');
 const tip=document.getElementById('eyedrop-tip');
 pixelCanvas.addEventListener('mousemove',e=>{
   const rect=pixelCanvas.getBoundingClientRect();
-  const z=parseInt(zoomSlider.value);
-  const cx=Math.floor((e.clientX-rect.left)/z);
-  const cy=Math.floor((e.clientY-rect.top)/z);
+  const scaleX=pixelCanvas.width/rect.width;
+  const scaleY=pixelCanvas.height/rect.height;
+  const cx=Math.floor((e.clientX-rect.left)*scaleX);
+  const cy=Math.floor((e.clientY-rect.top)*scaleY);
   if(cx<0||cy<0||cx>=pixelCanvas.width||cy>=pixelCanvas.height){tip.style.display='none';return}
   const px=pixelCanvas.getContext('2d').getImageData(cx,cy,1,1).data;
   const hex=`#${[px[0],px[1],px[2]].map(v=>v.toString(16).padStart(2,'0')).join('')}`;
@@ -295,9 +313,10 @@ pixelCanvas.addEventListener('mousemove',e=>{
 pixelCanvas.addEventListener('mouseleave',()=>tip.style.display='none');
 pixelCanvas.addEventListener('click',e=>{
   const rect=pixelCanvas.getBoundingClientRect();
-  const z=parseInt(zoomSlider.value);
-  const cx=Math.floor((e.clientX-rect.left)/z);
-  const cy=Math.floor((e.clientY-rect.top)/z);
+  const scaleX=pixelCanvas.width/rect.width;
+  const scaleY=pixelCanvas.height/rect.height;
+  const cx=Math.floor((e.clientX-rect.left)*scaleX);
+  const cy=Math.floor((e.clientY-rect.top)*scaleY);
   if(cx<0||cy<0||cx>=pixelCanvas.width||cy>=pixelCanvas.height)return;
   const px=pixelCanvas.getContext('2d').getImageData(cx,cy,1,1).data;
   const hex=`#${[px[0],px[1],px[2]].map(v=>v.toString(16).padStart(2,'0')).join('')}`;
@@ -328,23 +347,6 @@ function toast(msg){
   const SESSION_SHOWN = 'pixier_star_shown_session';
   function createPopupHTML() {
     if (document.getElementById('starPopup')) return;
-    
-    const popupHTML = `
-      <div id="starPopup" class="popup-overlay">
-        <div class="popup-card">
-          <div class="popup-icon">⭐✨</div>
-          <h2>Love PixieR?</h2>
-          <p>This tool is 100% free & open source.<br>Support the project by giving a star on GitHub!</p>
-          <a href="https://github.com/cryskyyexp-ux/PixieR-Project" target="_blank" rel="noopener noreferrer" class="repo-link" id="popupRepoLink">github.com/cryskyyexp-ux/PixieR-Project</a>
-          <div class="popup-buttons">
-            <button class="star-btn" id="starNowBtn">🌟 Star on GitHub</button>
-            <button class="later-btn" id="laterBtn">⏱️ Remind later</button>
-            <button class="never-btn" id="neverBtn">🔕 Don't show again</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', popupHTML);
   }
 
   function closePopup() {
@@ -359,35 +361,11 @@ function toast(msg){
 
   function showToast(msg) {
     const toast = document.getElementById('toast');
-    if (!toast) {
-      const newToast = document.createElement('div');
-      newToast.id = 'toast';
-      newToast.style.cssText = `
-        position: fixed;
-        bottom: 26px;
-        left: 50%;
-        transform: translateX(-50%) translateY(70px);
-        background: var(--text, #1a1a2e);
-        color: var(--bg, #ffffff);
-        padding: 10px 22px;
-        border-radius: 11px;
-        font-size: 0.88rem;
-        font-weight: 700;
-        z-index: 9999;
-        opacity: 0;
-        transition: transform 0.3s, opacity 0.3s;
-        white-space: nowrap;
-        pointer-events: none;
-      `;
-      document.body.appendChild(newToast);
-      newToast.innerText = msg;
-      newToast.classList.add('show');
-      setTimeout(() => newToast.classList.remove('show'), 2600);
-      return;
+    if (toast) {
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
     }
-    toast.innerText = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2600);
   }
 
   function shouldShowPopup() {
@@ -430,12 +408,12 @@ function toast(msg){
 
   function initPopup() {
     createPopupHTML();
-    
+
     const starBtn = document.getElementById('starNowBtn');
     const laterBtn = document.getElementById('laterBtn');
     const neverBtn = document.getElementById('neverBtn');
     const overlay = document.getElementById('starPopup');
-    
+
     if (starBtn) starBtn.addEventListener('click', handleStar);
     if (laterBtn) laterBtn.addEventListener('click', handleLater);
     if (neverBtn) neverBtn.addEventListener('click', handleNever);
